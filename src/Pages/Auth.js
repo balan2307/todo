@@ -36,6 +36,8 @@ function Auth() {
 
   const [isLoginPage, setLoginPage] = useState(true);
 
+  
+
   useEffect(() => {
     const { isEmailValid, isPasswordValid } = state;
 
@@ -87,13 +89,17 @@ function Auth() {
   }
 
   function handleBlur(field) {
-    dispatch({ type: "SET_BLUR", field });
+
+      console.log("blur")
+ 
+      dispatch({ type: "SET_BLUR", field });
+    
   }
 
   function togglePage(){
     
-    // dispatch({type:"RESET"})
-    console.log("toggle page")
+    dispatch({type:"RESET"})
+    console.log("toggle page ")
     setLoginPage((prev) => !prev)
   }
 
@@ -109,6 +115,9 @@ function Auth() {
         <p className="font-bold text-center text-2xl">
           {isLoginPage ? "Login" : "Signup"}
         </p>
+
+        <form onSubmit={(e)=>e.preventDefault()}
+        className=" p-2 flex flex-col gap-4">
 
         <Input
           setInput={handleChange}
@@ -141,15 +150,22 @@ function Auth() {
           >
             {isLoginPage ? "Login" : "Register"}
           </button>
+
           <button
-            onClick={() => togglePage()}
+          
+            onMouseDown={(e)=>e.preventDefault()}
+            onMouseUp={togglePage}
             className="text-white bg-blue-500 px-2 py-1 rounded-lg font-semibold"
           >
             {isLoginPage
               ? "Dont have an account ?"
               : "Already have an account ?"}
           </button>
+
+      
+       
         </div>
+        </form>
       </div>
     </div>
   );
