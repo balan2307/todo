@@ -3,6 +3,8 @@ import Input from "../Components/Input";
 import { useRef, useState, useReducer } from "react";
 import WarningHeader from "../Components/WarningHeader";
 
+import { intializeDB ,registerUser ,loginUser} from "../utils/initDb";
+
 
 const initialState = {
   email: "",
@@ -48,6 +50,13 @@ function Auth() {
     });
   }, [state.isEmailValid, state.isPasswordValid]);
 
+
+  useEffect(()=>{
+
+    intializeDB()
+
+  },[])
+
   // useEffect(()=>{
 
     
@@ -56,8 +65,21 @@ function Auth() {
 
   // },[isLoginPage])
 
-  function handleSubmit() {
+
+
+  async function handleSubmit() {
     console.log("handle llogin ", state);
+
+   
+    if(isLoginPage){
+
+      const user=await loginUser(state.email)
+      console.log("login ",user)
+      
+
+
+    }
+    else  registerUser(state.email,state.password)
   }
 
   function handleChange(field, value) {
