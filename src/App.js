@@ -1,30 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './Pages/Auth';
-import { AuthContext } from './Store/AuthProvider';
-import { useContext } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
-import { RouterProvider } from 'react-router-dom';
-
-
-const router=createBrowserRouter([
-
-  {
-    path:"/auth",
-    element:<Auth></Auth>
-
-  }
-]
-  )
+import LandingPage from './Pages/LandingPage';
+import PrivateRoutes from './utils/PrivateRoute';
 
 function App() {
-
-  // const auth=useContext(AuthContext)
-
-  // console.log("auth ",auth.isLoggedIn
-  // )
   return (
-   <RouterProvider router={router}></RouterProvider>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PrivateRoutes>
+                <Route index element={<LandingPage />} />
+              </PrivateRoutes>
+            }
+          />
+          <Route path="/auth" element={<Auth />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
