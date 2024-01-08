@@ -3,18 +3,28 @@ import './App.css';
 import Auth from './Pages/Auth';
 import { AuthContext } from './Store/AuthProvider';
 import { useContext } from 'react';
+import { createBrowserRouter } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
+
+
+const router=createBrowserRouter([
+
+  {
+    path:"/auth",
+    element:<Auth></Auth>
+
+  }
+]
+  )
 
 function App() {
 
-  const auth=useContext(AuthContext)
+  // const auth=useContext(AuthContext)
 
-  console.log("auth ",auth.isLoggedIn
-  )
+  // console.log("auth ",auth.isLoggedIn
+  // )
   return (
-    <div >
-     
-    <Auth></Auth>
-    </div>
+   <RouterProvider router={router}></RouterProvider>
   );
 }
 
