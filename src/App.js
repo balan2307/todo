@@ -9,18 +9,17 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <PrivateRoutes>
-                <Route index element={<LandingPage />} />
-              </PrivateRoutes>
-            }
-          />
-          <Route path="/auth" element={<Auth />} />
-        </Routes>
-      </Router>
-    </div>
+
+
+        <Route element={<PrivateRoutes />}>
+                <Route element={<LandingPage/>} path="/" exact/>
+               
+            </Route>
+          
+        <Route path="/auth" element={<Auth />} />
+      </Routes>
+    </Router>
+    </div >
   );
 }
 

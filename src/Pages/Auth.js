@@ -2,8 +2,13 @@ import React, { useEffect } from "react";
 import Input from "../Components/Input";
 import { useRef, useState, useReducer } from "react";
 import WarningHeader from "../Components/WarningHeader";
+import { AuthContext } from '../Store/AuthProvider'
+import { useContext } from 'react'
 
+
+import { useNavigate } from "react-router-dom";
 import { intializeDB ,registerUser ,loginUser} from "../utils/initDb";
+import Cookies from 'js-cookie';
 
 
 const initialState = {
@@ -38,6 +43,11 @@ function Auth() {
 
   const [isLoginPage, setLoginPage] = useState(true);
 
+  const auth=useContext(AuthContext)
+
+
+
+  const navigate=useNavigate();
   
 
   useEffect(() => {
@@ -74,13 +84,32 @@ function Auth() {
     if(isLoginPage){
 
       const user=await loginUser(state.email)
-      console.log("login ",user)
+      console.log("login ",user.password,state.password)
       
+      if(state.password==user.password){
+
+        console.log("login sucess")
+
+        Cookies.set('loggedInUser', state.email, { expires: 1 });
+
+        auth.login()
+
+        navigate('/')
+
+
+      }
+      else console.log("logout")
 
 
     }
-    else  registerUser(state.email,state.password)
+    else {
+       registerUser(state.email,state.password)
+       console.log("register page")
+       togglePage()
+       
+    }
   }
+
 
   function handleChange(field, value) {
 
