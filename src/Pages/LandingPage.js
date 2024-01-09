@@ -1,90 +1,202 @@
-import { AuthContext } from '../Store/AuthProvider'
-import { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../Components/Navbar';
-import Input from '../Components/Input';
-import Cookies from 'js-cookie';
+import { AuthContext } from "../Store/AuthProvider";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../Components/Navbar";
+import Input from "../Components/Input";
+import Cookies from "js-cookie";
+import { v4 as uuidv4 } from "uuid";
+import Task from "../Components/Task";
 
-import { addTodos, getAllTodos } from '../utils/initDb';
+import { addTodos, getAllTodos } from "../utils/initDb";
+
+const generateUniqueId = () => {
+  return uuidv4();
+};
+
+function searchTasks(tasks, query) {
+  const lowercasedQuery = query.toLowerCase();
+
+  const filteredTasks = tasks.filter((task) => {
+    const titleMatch = task.title.toLowerCase().includes(lowercasedQuery);
+    const descriptionMatch = task.description.toLowerCase().includes(lowercasedQuery);
+
+    return titleMatch || descriptionMatch;
+  });
+
+  return filteredTasks;
+}
+
 
 export default function LandingPage() {
-
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
-  const [allTodos,setAllTodos]=useState("")
+  const [allTodos, setAllTodos] = useState([]);
+  const [filterTasks, setFilteredTasks] = useState([]);
+  const [searchQuery,setSearchQuery]=useState("")
 
-  const navigate = useNavigate()
+  const [currentDate, setCurrentDate] = useState("");
 
+  const [showForm, setFormStatus] = useState(false);
 
+  const navigate = useNavigate();
 
   async function fetchTodos() {
-
     const todos = await getAllTodos(Cookies.get("loggedInUser"));
-    setAllTodos(todos)
+    setAllTodos(todos);
+  }
 
-    console.log("all todos", todos)
+  function getFilteredTasks(targetDate) {
+    targetDate = new Date(targetDate);
+    const tasks = allTodos.filter((task) => {
+      const taskDate = new Date(task.date);
+      return (
+        taskDate.toISOString().split("T")[0] ===
+        targetDate.toISOString().split("T")[0]
+      );
+    });
 
-
+    return tasks;
   }
 
   useEffect(() => {
-
-    fetchTodos()
-
-  }, [])
-
+    console.log("fetch");
+    fetchTodos();
+  }, []);
 
 
+  useEffect(()=>{
+
+    setFilteredTasks(searchTasks(allTodos,searchQuery))
 
 
-  const auth = useContext(AuthContext)
 
+  },[searchQuery])
+
+  useEffect(() => {
+    let date = new Date();
+    date = date.toISOString().split("T")[0];
+
+    console.log("date ", date, new Date(date));
+
+    setCurrentDate(date);
+  }, []);
+
+  useEffect(() => {
+    setFilteredTasks(getFilteredTasks(currentDate));
+  }, [allTodos.length, currentDate]);
+
+  const auth = useContext(AuthContext);
 
   function logoutUser() {
-
     auth.logout();
-    navigate("/auth")
+    navigate("/auth");
   }
-
 
   function addTodo(e) {
-
     e.preventDefault();
-    console.log("todo ", title, description, date)
-    console.log("user ", Cookies.get("loggedInUser"))
+    console.log("todo ", title, description, date);
+    console.log("user ", Cookies.get("loggedInUser"));
 
-    addTodos(Cookies.get("loggedInUser"), { title, description, date })
-    fetchTodos()
+    const newTask = { id: generateUniqueId(), title, description, date };
+    setAllTodos([...allTodos, newTask]);
+    addTodos(Cookies.get("loggedInUser"), newTask);
 
-
+    setTitle("");
+    setDate("");
+    setDescription("");
+    // fetchTodos();
   }
 
-
-
-
   return (
-    <div >
-
+    <div>
       <Navbar></Navbar>
 
+      <div className=" h-[100vh] p-4  w-[80%] mx-auto">
+        <p className="font-semibold text-2xl">Today</p>
 
+        <div className="flex flex-col mt-4">
+          <div>
+            <Input
+              type="text"
+              setInput={setSearchQuery}
+              value={searchQuery}
+              styles="border-none focus:outline-none"
+              placeholder="Search by title , description"
+            ></Input>
+          </div>
 
+          <div className="flex ml-2">
+            <p className="mt-[5px] font-semibold"> Search by date</p>
+            <Input
+              type="date"
+              setInput={setCurrentDate}
+              value={currentDate}
+              styles="w-36 border-none"
+            ></Input>
+          </div>
+        </div>
+        <div className="mt-4">
+          {filterTasks?.map((task) => {
+            return <Task info={task} key={task.id}></Task>;
+          })}
+          {!showForm && (
+            <p
+              className="text-gray-500 font-semibold hover:text-orange-500
+          cursor-pointer"
+              onClick={() => setFormStatus((prev) => !prev)}
+            >
+              Add task
+            </p>
+          )}
 
-      <div className=' h-[100vh] p-4 '>
+          {showForm && (
+            <div
+              className="flex flex-col border rounded-md border-gray-400
+         p-1 gap-1"
+            >
+              <form onSubmit={(e) => addTodo(e)}>
+                <Input
+                  type="text"
+                  setInput={setTitle}
+                  value={title}
+                  styles="border-none focus:outline-none"
+                  placeholder="Task name"
+                ></Input>
 
-        <form className='flex border flex-col gap-4 p-10 w-[30%]'
-          onSubmit={(e) => addTodo(e)}>
+                <Input
+                  type="text"
+                  setInput={setDescription}
+                  styles="border-none focus:outline-none"
+                  placeholder="description"
+                  value={description}
+                ></Input>
 
-          <Input type="text" label="title" setInput={setTitle} value={title}></Input>
+                <Input
+                  type="date"
+                  setInput={setDate}
+                  value={date}
+                  styles="w-36 border-none"
+                ></Input>
 
-          <Input type="textarea" label="description" setInput={setDescription} value={description}></Input>
-
-          <Input type="date" label="date" setInput={setDate} value={date}></Input>
-
-          <button >Add todo</button>
-        </form>
+                <div className="flex w-[100%] justify-end gap-2">
+                  <button
+                    className="border w-16 bg-purple-50 rounded-md"
+                    onClick={() => setFormStatus((prev) => !prev)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="border w-20 bg-orange-400 text-white
+                 rounded-md"
+                  >
+                    Add task
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* <button onClick={logoutUser} >Logout</button> */}
