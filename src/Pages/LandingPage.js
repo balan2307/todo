@@ -6,8 +6,11 @@ import Input from "../Components/Input";
 import Cookies from "js-cookie";
 import { v4 as uuidv4 } from "uuid";
 import Task from "../Components/Task";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { addTodos, getAllTodos } from "../utils/initDb";
+import TaskForm from "../Components/TaskForm";
 
 const generateUniqueId = () => {
   return uuidv4();
@@ -18,7 +21,9 @@ function searchTasks(tasks, query) {
 
   const filteredTasks = tasks.filter((task) => {
     const titleMatch = task.title.toLowerCase().includes(lowercasedQuery);
-    const descriptionMatch = task.description.toLowerCase().includes(lowercasedQuery);
+    const descriptionMatch = task.description
+      .toLowerCase()
+      .includes(lowercasedQuery);
 
     return titleMatch || descriptionMatch;
   });
@@ -26,19 +31,17 @@ function searchTasks(tasks, query) {
   return filteredTasks;
 }
 
-
 export default function LandingPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [allTodos, setAllTodos] = useState([]);
   const [filterTasks, setFilteredTasks] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [currentDate, setCurrentDate] = useState("");
 
   const [showForm, setFormStatus] = useState(false);
-
 
   const auth = useContext(AuthContext);
 
@@ -68,14 +71,9 @@ export default function LandingPage() {
     fetchTodos();
   }, []);
 
-
   useEffect(() => {
-
-    setFilteredTasks(searchTasks(allTodos, searchQuery))
-
-
-
-  }, [searchQuery])
+    setFilteredTasks(searchTasks(allTodos, searchQuery));
+  }, [searchQuery]);
 
   useEffect(() => {
     let date = new Date();
@@ -90,16 +88,12 @@ export default function LandingPage() {
     setFilteredTasks(getFilteredTasks(currentDate));
   }, [allTodos.length, currentDate]);
 
- 
-
-  
-
-  function addTodo(e) {
+  function addTodo(e,task) {
     e.preventDefault();
     // console.log("todo ", title, description, date);
     // console.log("user ", Cookies.get("loggedInUser"));
 
-    const newTask = { id: generateUniqueId(), title, description, date };
+    const newTask = { ...task,id: generateUniqueId()};
     setAllTodos([...allTodos, newTask]);
     addTodos(auth.loggedInUser, newTask);
 
@@ -113,7 +107,7 @@ export default function LandingPage() {
     <div>
       <Navbar></Navbar>
 
-      <div className=" h-[100vh] p-4  w-[80%] mx-auto">
+      <div className="p-4 w-[80%] md:w-[60%] mx-auto">
         <p className="font-semibold text-2xl">Today</p>
 
         <div className="flex flex-col mt-4">
@@ -142,65 +136,25 @@ export default function LandingPage() {
             return <Task info={task} key={task.id} tasks={allTodos}></Task>;
           })}
           {!showForm && (
-            <p
-              className="text-gray-500 font-semibold hover:text-orange-500
+            <div className="flex gap-2">
+              <FontAwesomeIcon icon={faPlus} className="pt-1 cursor-pointer"></FontAwesomeIcon>
+
+              <p
+                className="text-gray-500 font-semibold hover:text-orange-500
           cursor-pointer"
-              onClick={() => setFormStatus((prev) => !prev)}
-            >
-              Add task
-            </p>
+                onClick={() => setFormStatus((prev) => !prev)}
+              >
+                Add task
+              </p>
+            </div>
           )}
 
           {showForm && (
-            <div
-              className="flex flex-col border rounded-md border-gray-400
-         p-1 gap-1"
-            >
-              <form onSubmit={(e) => addTodo(e)}>
-                <Input
-                  type="text"
-                  setInput={setTitle}
-                  value={title}
-                  styles="border-none focus:outline-none w-[100%]"
-                  placeholder="Task name"
-                ></Input>
-
-                <Input
-                  type="text"
-                  setInput={setDescription}
-                  styles="border-none focus:outline-none w-[100%]"
-                  placeholder="description"
-                  value={description}
-                ></Input>
-
-                <Input
-                  type="date"
-                  setInput={setDate}
-                  value={date}
-                  styles="w-36 border-none "
-                ></Input>
-
-                <div className="flex w-[100%] justify-end gap-2">
-                  <button
-                    className="border w-16 bg-purple-50 rounded-md"
-                    onClick={() => setFormStatus((prev) => !prev)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="border w-20 bg-orange-400 text-white
-                 rounded-md"
-                  >
-                    Add task
-                  </button>
-                </div>
-              </form>
-            </div>
+      
+      <TaskForm handleSubmit={addTodo}></TaskForm>
           )}
         </div>
       </div>
-
-     
     </div>
   );
 }
