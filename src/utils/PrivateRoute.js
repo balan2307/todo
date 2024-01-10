@@ -8,14 +8,14 @@ const PrivateRoutes = () => {
 
     const auth=useContext(AuthContext)
 
-    console.log("store ",auth.isLoggedIn)
+    // console.log("store ",auth.isLoggedIn)
     const user=Cookies.get("loggedInUser")
 
     const isLoggedIn=auth.isLoggedIn;
 
     
 
-    console.log("private route ",isLoggedIn)
+    // console.log("private route ",isLoggedIn)
     return(
         isLoggedIn ? <Outlet/> : <Navigate to="/auth"/>
     )

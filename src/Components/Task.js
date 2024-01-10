@@ -16,45 +16,39 @@ function Task({ info ,tasks}) {
   const [taskStatus, setCompletionStatus ] = useState(completionStatus ? true : false);
 
 
-  console.log("Task ",info)
+  // console.log("Task ",info.id)
   function handleCompletion(status){
 
-    info.completionStatus=status;
-
-    console.log("mark as complete ",info)
-    setCompletionStatus(status)
-    
-
-
-
-
    
+    // const updatedInfo = { ...info, completionStatus: status };
+    info.completionStatus = status;
+    setCompletionStatus(status);
 
-    let updatedTasks = tasks.map((task) => {
 
-      if (task.id == id) {
-        console.log("macthed ",info)
-        return info;
-        
+    // for(let i=0.;i<tasks.length;i++){
+
+    //   if(tasks[i].id==id) tasks[i].completionStatus=status;
+
+    // }
+    const updatedTasks = tasks.map((task) =>{
+      if(task.id === id){
+        task.completionStatus = status;
+        return task;
+      }else{
+        return task;
       }
-      else {
-        console.log("task")
-        return task
-      }
-    })
+    } );
 
+    console.log("allTasks ", updatedTasks);
 
-    console.log("allTasks ",updatedTasks)
-
-
-    updateTask(auth.loggedInUser,updatedTasks)
+    updateTask(auth.loggedInUser, tasks);
 
     // console.log("tasks ",updatedTasks)
   }
 
   return (
     <div className="mb-2 p-2 flex gap-4">
-      {console.log("status ",taskStatus)}
+     
       <div className="pt-1">
         {!taskStatus ? (
           <FontAwesomeIcon
