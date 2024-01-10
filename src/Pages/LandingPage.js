@@ -33,21 +33,25 @@ export default function LandingPage() {
   const [date, setDate] = useState("");
   const [allTodos, setAllTodos] = useState([]);
   const [filterTasks, setFilteredTasks] = useState([]);
-  const [searchQuery,setSearchQuery]=useState("")
+  const [searchQuery, setSearchQuery] = useState("")
 
   const [currentDate, setCurrentDate] = useState("");
 
   const [showForm, setFormStatus] = useState(false);
 
+
+  const auth = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   async function fetchTodos() {
-    const todos = await getAllTodos(Cookies.get("loggedInUser"));
+    const todos = await getAllTodos(auth.loggedInUser);
     setAllTodos(todos);
   }
 
   function getFilteredTasks(targetDate) {
     targetDate = new Date(targetDate);
+
     const tasks = allTodos.filter((task) => {
       const taskDate = new Date(task.date);
       return (
@@ -65,13 +69,13 @@ export default function LandingPage() {
   }, []);
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    setFilteredTasks(searchTasks(allTodos,searchQuery))
+    setFilteredTasks(searchTasks(allTodos, searchQuery))
 
 
 
-  },[searchQuery])
+  }, [searchQuery])
 
   useEffect(() => {
     let date = new Date();
@@ -86,21 +90,18 @@ export default function LandingPage() {
     setFilteredTasks(getFilteredTasks(currentDate));
   }, [allTodos.length, currentDate]);
 
-  const auth = useContext(AuthContext);
+ 
 
-  function logoutUser() {
-    auth.logout();
-    navigate("/auth");
-  }
+  
 
   function addTodo(e) {
     e.preventDefault();
-    console.log("todo ", title, description, date);
-    console.log("user ", Cookies.get("loggedInUser"));
+    // console.log("todo ", title, description, date);
+    // console.log("user ", Cookies.get("loggedInUser"));
 
     const newTask = { id: generateUniqueId(), title, description, date };
     setAllTodos([...allTodos, newTask]);
-    addTodos(Cookies.get("loggedInUser"), newTask);
+    addTodos(auth.loggedInUser, newTask);
 
     setTitle("");
     setDate("");
@@ -121,7 +122,7 @@ export default function LandingPage() {
               type="text"
               setInput={setSearchQuery}
               value={searchQuery}
-              styles="border-none focus:outline-none"
+              styles="border-none focus:outline-none w-[100%]"
               placeholder="Search by title , description"
             ></Input>
           </div>
@@ -132,13 +133,13 @@ export default function LandingPage() {
               type="date"
               setInput={setCurrentDate}
               value={currentDate}
-              styles="w-36 border-none"
+              styles="w-36 border-none w-[100%]"
             ></Input>
           </div>
         </div>
         <div className="mt-4">
           {filterTasks?.map((task) => {
-            return <Task info={task} key={task.id}></Task>;
+            return <Task info={task} key={task.id} tasks={allTodos}></Task>;
           })}
           {!showForm && (
             <p
@@ -160,14 +161,14 @@ export default function LandingPage() {
                   type="text"
                   setInput={setTitle}
                   value={title}
-                  styles="border-none focus:outline-none"
+                  styles="border-none focus:outline-none w-[100%]"
                   placeholder="Task name"
                 ></Input>
 
                 <Input
                   type="text"
                   setInput={setDescription}
-                  styles="border-none focus:outline-none"
+                  styles="border-none focus:outline-none w-[100%]"
                   placeholder="description"
                   value={description}
                 ></Input>
@@ -176,7 +177,7 @@ export default function LandingPage() {
                   type="date"
                   setInput={setDate}
                   value={date}
-                  styles="w-36 border-none"
+                  styles="w-36 border-none "
                 ></Input>
 
                 <div className="flex w-[100%] justify-end gap-2">
@@ -199,7 +200,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* <button onClick={logoutUser} >Logout</button> */}
+     
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { useContext } from 'react'
 
 
 import { useNavigate } from "react-router-dom";
-import { intializeDB ,registerUser ,loginUser} from "../utils/initDb";
+import { intializeDB, registerUser, loginUser } from "../utils/initDb";
 import Cookies from 'js-cookie';
 
 
@@ -20,7 +20,7 @@ const initialState = {
   },
   isEmailValid: false,
   isPasswordValid: false,
-  isFormValid:false
+  isFormValid: false
 };
 
 const formReducer = (state, action) => {
@@ -32,7 +32,7 @@ const formReducer = (state, action) => {
     case "SET_VALIDITY":
       return { ...state, [action.field]: action.value };
     case "RESET":
-      return {...initialState}
+      return { ...initialState }
     default:
       return { ...state };
   }
@@ -43,12 +43,12 @@ function Auth() {
 
   const [isLoginPage, setLoginPage] = useState(true);
 
-  const auth=useContext(AuthContext)
+  const auth = useContext(AuthContext)
 
 
 
-  const navigate=useNavigate();
-  
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const { isEmailValid, isPasswordValid } = state;
@@ -61,15 +61,15 @@ function Auth() {
   }, [state.isEmailValid, state.isPasswordValid]);
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
     intializeDB()
 
-  },[])
+  }, [])
 
   // useEffect(()=>{
 
-    
+
   //   dispatch({type:"RESET"})
 
 
@@ -80,19 +80,21 @@ function Auth() {
   async function handleSubmit() {
     console.log("handle llogin ", state);
 
-   
-    if(isLoginPage){
 
-      const user=await loginUser(state.email)
-      console.log("login ",user.password,state.password)
-      
-      if(state.password==user.password){
+    if (isLoginPage) {
+
+      const user = await loginUser(state.email)
+      console.log("login ", user.password, state.password)
+
+      if (state.password == user.password) {
 
         console.log("login sucess")
 
         Cookies.set('loggedInUser', state.email, { expires: 1 });
 
-        auth.login()
+
+
+        auth.login(state.email)
 
         navigate('/')
 
@@ -103,10 +105,10 @@ function Auth() {
 
     }
     else {
-       registerUser(state.email,state.password)
-       console.log("register page")
-       togglePage()
-       
+      registerUser(state.email, state.password)
+      console.log("register page")
+      togglePage()
+
     }
   }
 
@@ -114,7 +116,7 @@ function Auth() {
   function handleChange(field, value) {
 
     // console.log("check filed ",field,value)
-   
+
     dispatch({ type: "SET_FIELD", field, value });
 
     switch (field) {
@@ -141,15 +143,15 @@ function Auth() {
 
   function handleBlur(field) {
 
-      console.log("blur")
- 
-      dispatch({ type: "SET_BLUR", field });
-    
+    console.log("blur")
+
+    dispatch({ type: "SET_BLUR", field });
+
   }
 
-  function togglePage(){
-    
-    dispatch({type:"RESET"})
+  function togglePage() {
+
+    dispatch({ type: "RESET" })
     console.log("toggle page ")
     setLoginPage((prev) => !prev)
   }
@@ -167,55 +169,55 @@ function Auth() {
           {isLoginPage ? "Login" : "Signup"}
         </p>
 
-        <form onSubmit={(e)=>e.preventDefault()}
-        className=" p-2 flex flex-col gap-4">
+        <form onSubmit={(e) => e.preventDefault()}
+          className=" p-2 flex flex-col gap-4">
 
-        <Input
-          setInput={handleChange}
-          setBlur={handleBlur}
-          type="email"
-          label="Email"
-          value={state.email}
-        ></Input>
-        {state.email?.trim()=="" && state.touched.email && <WarningHeader message="Email cannot be empty"></WarningHeader>}
-        {state.email?.trim() != "" && !state.isEmailValid && state.touched.email && <WarningHeader message="Enter a valid email"></WarningHeader>}
+          <Input
+            setInput={handleChange}
+            setBlur={handleBlur}
+            type="email"
+            label="Email"
+            value={state.email}
+          ></Input>
+          {state.email?.trim() == "" && state.touched.email && <WarningHeader message="Email cannot be empty"></WarningHeader>}
+          {state.email?.trim() != "" && !state.isEmailValid && state.touched.email && <WarningHeader message="Enter a valid email"></WarningHeader>}
 
-        <Input
-          setInput={handleChange}
-          setBlur={handleBlur}
-          type="password"
-          label="Password"
-          value={state.password}
-        ></Input>
-          {state.password?.trim()=="" && state.touched.password && <WarningHeader message="Password cannot be empty"></WarningHeader>}
-        {state.password?.trim() != "" && !state.isPasswordValid && state.touched.password && <WarningHeader message="Enter a valid password"></WarningHeader>}
+          <Input
+            setInput={handleChange}
+            setBlur={handleBlur}
+            type="password"
+            label="Password"
+            value={state.password}
+          ></Input>
+          {state.password?.trim() == "" && state.touched.password && <WarningHeader message="Password cannot be empty"></WarningHeader>}
+          {state.password?.trim() != "" && !state.isPasswordValid && state.touched.password && <WarningHeader message="Enter a valid password"></WarningHeader>}
 
-        <div className="flex flex-col md:flex-row gap-2 justify-center">
-       
-          <button
-            className={`${!state.isFormValid ? "btn-disabled" : ''} text-white bg-green-500 px-2 py-1 rounded-lg font-semibold 
+          <div className="flex flex-col md:flex-row gap-2 justify-center">
+
+            <button
+              className={`${!state.isFormValid ? "btn-disabled" : ''} text-white bg-green-500 px-2 py-1 rounded-lg font-semibold 
            `}
-            
-            onClick={() => handleSubmit()}
 
-          >
-            {isLoginPage ? "Login" : "Register"}
-          </button>
+              onClick={() => handleSubmit()}
 
-          <button
-          
-            onMouseDown={(e)=>e.preventDefault()}
-            onMouseUp={togglePage}
-            className="text-white bg-blue-500 px-2 py-1 rounded-lg font-semibold"
-          >
-            {isLoginPage
-              ? "Dont have an account ?"
-              : "Already have an account ?"}
-          </button>
+            >
+              {isLoginPage ? "Login" : "Register"}
+            </button>
 
-      
-       
-        </div>
+            <button
+
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseUp={togglePage}
+              className="text-white bg-blue-500 px-2 py-1 rounded-lg font-semibold"
+            >
+              {isLoginPage
+                ? "Dont have an account ?"
+                : "Already have an account ?"}
+            </button>
+
+
+
+          </div>
         </form>
       </div>
     </div>
