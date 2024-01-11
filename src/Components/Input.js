@@ -11,7 +11,7 @@ const Input = function ({
   placeholder,
 }) {
   return (
-    <div>
+    <div className="w-[100%]">
       <p className="font-semibold">{label}</p>
 
       <input

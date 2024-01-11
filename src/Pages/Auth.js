@@ -45,8 +45,6 @@ function Auth() {
 
   const navigate = useNavigate();
 
-
-
   useEffect(() => {
     const { isEmailValid, isPasswordValid } = state;
 
@@ -72,16 +70,16 @@ function Auth() {
         if (state.password == user.password) {
           console.log("login sucess");
 
-          Cookies.set("loggedInUser", state.email, { expires: 1 });
+          Cookies.set("loggedInUser", state.email, { expires: 1 * 1000 });
 
           auth.login(state.email);
 
           navigate("/");
         } else {
-          auth.displayToast("error","Invalid email id or password");
+          auth.displayToast("error", "Invalid email id or password");
         }
       } catch (e) {
-          auth.displayToast("error","Invalid email id or password");
+        auth.displayToast("error", "Invalid email id or password");
 
         console.log("error ", e);
       }
@@ -137,7 +135,6 @@ function Auth() {
       className=" w-[100%] h-[100vh] border
     flex justify-center items-start bg-[#ececf4]"
     >
-      
       <div
         className="mt-16 border  bg-[white] p-8 flex flex-col 
       gap-4 shadow-lg"
@@ -182,7 +179,7 @@ function Auth() {
               <WarningHeader message="Enter a valid password"></WarningHeader>
             )}
 
-          <div className="flex flex-col md:flex-row gap-2 justify-center">
+          <div className="flex flex-col  gap-2 justify-center">
             <button
               className={`${
                 !state.isFormValid ? "btn-disabled" : ""

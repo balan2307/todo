@@ -73,7 +73,7 @@ function Task({ info, tasks, updateTasks }) {
   }
 
   return (
-    <div className="mb-2 p-4 bg-[#e9e9e9] rounded-md ">
+    <div className={`mb-2  ${editFormStatus ? 'p-2' : 'p-4'} bg-[#e9e9e9] rounded-md `}>
       {!editFormStatus && (
         <div className="flex gap-4">
           <div className="pt-1">

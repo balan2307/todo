@@ -9,8 +9,8 @@ function TaskForm({ handleSubmit, setFormStatus, task, editFormStatus }) {
 
   return (
     <div
-      className="flex flex-col border rounded-md border-[#e6e6e6]
-p-1 gap-1 bg-[#e9e9e9]"
+      className="p-2 flex flex-col border rounded-md border-[#e6e6e6]
+ gap-1 bg-[#e9e9e9]"
     >
       <form
         onSubmit={(e) => {
