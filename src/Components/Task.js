@@ -11,7 +11,7 @@ import { AuthContext } from "../Store/AuthProvider";
 import { useContext } from "react";
 import { updateTask } from "../utils/initDb";
 import TaskForm from "./TaskForm";
-import { getAllByAltText } from "@testing-library/react";
+
 
 function Task({ info, tasks, updateTasks }) {
   const { title, description, date, id, completionStatus } = info;
@@ -39,6 +39,8 @@ function Task({ info, tasks, updateTasks }) {
     });
 
     updateTask(auth.loggedInUser, updatedTasks);
+
+   
   }
 
    function deleteTask(){
@@ -46,6 +48,7 @@ function Task({ info, tasks, updateTasks }) {
     tasks=tasks.filter((task)=>task.id!=id)
     updateTasks(tasks)
     updateTask(auth.loggedInUser, tasks);
+    auth.displayToast("success","Task deleted!")
 
     
 
@@ -65,6 +68,8 @@ function Task({ info, tasks, updateTasks }) {
     updateTasks([...updatedTasks]);
 
     updateTask(auth.loggedInUser, updatedTasks);
+
+    auth.displayToast("success","Task edited!")
   }
 
   return (

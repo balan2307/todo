@@ -12,18 +12,19 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { addTodos, getAllTodos } from "../utils/initDb";
 import TaskForm from "../Components/TaskForm";
 
+
 const generateUniqueId = () => {
   return uuidv4();
 };
 
 function searchTasks(tasks, query) {
-  const lowercasedQuery = query.toLowerCase();
+  query = query.toLowerCase();
 
   const filteredTasks = tasks.filter((task) => {
-    const titleMatch = task.title.toLowerCase().includes(lowercasedQuery);
+    const titleMatch = task.title.toLowerCase().includes(query);
     const descriptionMatch = task.description
       .toLowerCase()
-      .includes(lowercasedQuery);
+      .includes(query);
 
     return titleMatch || descriptionMatch;
   });
@@ -67,15 +68,11 @@ export default function LandingPage() {
   }
 
   useEffect(() => {
-    // console.log("fetch"),;
+ 
     fetchTodos();
   }, []);
 
-  useEffect(()=>{
-
-    console.log("change ",allTodos)
-
-  },[allTodos])
+ 
 
   useEffect(() => {
     setFilteredTasks(searchTasks(allTodos, searchQuery));
@@ -96,16 +93,21 @@ export default function LandingPage() {
 
   function addTodo(e,task) {
     e.preventDefault();
-    // console.log("todo ", title, description, date);
-    // console.log("user ", Cookies.get("loggedInUser"));
+   
 
     const newTask = { ...task,id: generateUniqueId(),completionStatus:false};
     setAllTodos([...allTodos, newTask]);
     addTodos(auth.loggedInUser, newTask);
 
+
+    // toast.success("Task added sucessfully!")
+    auth.displayToast("success","Task added sucessfully!")
+
     setTitle("");
     setDate("");
     setDescription("");
+
+
     // fetchTodos();
   }
 
@@ -113,8 +115,10 @@ export default function LandingPage() {
     <div>
       <Navbar></Navbar>
 
+      
+
       <div className="p-4 w-[80%] md:w-[60%] mx-auto">
-        <p className="font-semibold text-2xl pl-1">Tasks</p>
+        <p className="font-semibold text-2xl pl-2">Tasks</p>
 
         <div className="flex flex-col mt-4">
           <div>
@@ -138,12 +142,12 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="mt-4">
-          {filterTasks?.map((task) => {
+          {filterTasks?.length!=0 ? (filterTasks?.map((task) => {
             return <Task info={task} key={task.id} tasks={allTodos}
             updateTasks={setAllTodos}></Task>;
-          })}
+          })) : (<p className="pl-2 mb-2">No tasks available</p>) }
           {!showForm && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 pl-2">
               <FontAwesomeIcon icon={faPlus} className="pt-1 cursor-pointer"></FontAwesomeIcon>
 
               <p
