@@ -3,35 +3,19 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
 import Input from "../Components/Input";
-import { v4 as uuidv4 } from "uuid";
+
 import Task from "../Components/Task";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import {
+  searchTasks,
+  generateUniqueId,
+  getFilteredTasks,
+} from "../utils/helperFunctions";
 import { faPlus, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { addTodos, getAllTodos } from "../utils/initDb";
 import TaskForm from "../Components/TaskForm";
 
-const generateUniqueId = () => {
-  return uuidv4();
-};
-
-function searchTasks(tasks, query) {
-  query = query.toLowerCase();
-
-  const filteredTasks = tasks.filter((task) => {
-    const titleMatch = task.title.toLowerCase().includes(query);
-    const descriptionMatch = task.description.toLowerCase().includes(query);
-
-    return titleMatch || descriptionMatch;
-  });
-
-  return filteredTasks;
-}
-
 export default function LandingPage() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
   const [allTodos, setAllTodos] = useState([]);
   const [filterTasks, setFilteredTasks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,20 +33,6 @@ export default function LandingPage() {
     setAllTodos(todos);
   }
 
-  function getFilteredTasks(targetDate) {
-    targetDate = new Date(targetDate);
-
-    const tasks = allTodos.filter((task) => {
-      const taskDate = new Date(task.date);
-      return (
-        taskDate.toISOString().split("T")[0] ===
-        targetDate.toISOString().split("T")[0]
-      );
-    });
-
-    return tasks;
-  }
-
   useEffect(() => {
     fetchTodos();
   }, []);
@@ -70,7 +40,7 @@ export default function LandingPage() {
   useEffect(() => {
     if (searchQuery.trim() == "") return;
 
-    setFilteredTasks(searchTasks(allTodos, searchQuery));
+    setFilteredTasks(searchTasks(allTodos, searchQuery, currentDate));
   }, [searchQuery]);
 
   useEffect(() => {
@@ -83,7 +53,10 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    setFilteredTasks(getFilteredTasks(currentDate));
+    setFilteredTasks(getFilteredTasks(allTodos, currentDate));
+    // setFilteredTasks(getFilteredTasks(searchTasks(allTodos,searchQuery)));
+
+    console.log("curr ", currentDate);
   }, [allTodos, currentDate]);
 
   function addTodo(e, task) {
@@ -98,10 +71,6 @@ export default function LandingPage() {
     addTodos(auth.loggedInUser, newTask);
 
     auth.displayToast("success", "Task added sucessfully!");
-
-    setTitle("");
-    setDate("");
-    setDescription("");
 
     // fetchTodos();
   }
@@ -127,9 +96,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex ml-2 mt-2">
-            <p className="mt-[5px] w-[50%] sm:w-[40%] md:w-[20%] font-semibold">
-              Search by date
-            </p>
+            <p className="mt-[5px]  font-semibold">Search by date</p>
             <Input
               type="date"
               setInput={setCurrentDate}
@@ -144,7 +111,7 @@ export default function LandingPage() {
               return (
                 <Task
                   info={task}
-                  key={task.id}
+                  key={task?.id}
                   tasks={allTodos}
                   updateTasks={setAllTodos}
                 ></Task>

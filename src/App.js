@@ -5,12 +5,14 @@ import LandingPage from "./Pages/LandingPage";
 import PrivateRoutes from "./utils/PrivateRoute";
 
 function App() {
+
+  // const auth=useContext(AuthContext)
   return (
     <div className="App">
       <Router>
         <Routes>
           <Route element={<PrivateRoutes />}>
-            <Route element={<LandingPage />} path="/" exact />
+            <Route element={<LandingPage />} path="/"  />
           </Route>
 
           <Route path="/auth" element={<Auth />} />

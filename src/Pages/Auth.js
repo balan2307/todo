@@ -8,33 +8,11 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { intializeDB, registerUser, loginUser } from "../utils/initDb";
 import Cookies from "js-cookie";
+import loginImage from "../login.jpg";
 
-const initialState = {
-  email: "",
-  password: "",
-  touched: {
-    email: false,
-    password: false,
-  },
-  isEmailValid: false,
-  isPasswordValid: false,
-  isFormValid: false,
-};
+import formReducer from "../utils/AuthReducer";
+import { initialState } from "../utils/AuthReducer";
 
-const formReducer = (state, action) => {
-  switch (action.type) {
-    case "SET_FIELD":
-      return { ...state, [action.field]: action.value };
-    case "SET_BLUR":
-      return { ...state, touched: { ...state.touched, [action.field]: true } };
-    case "SET_VALIDITY":
-      return { ...state, [action.field]: action.value };
-    case "RESET":
-      return { ...initialState };
-    default:
-      return { ...state };
-  }
-};
 
 function Auth() {
   const [state, dispatch] = useReducer(formReducer, initialState);
@@ -135,72 +113,76 @@ function Auth() {
       className=" w-[100%] h-[100vh] border
     flex justify-center items-start bg-[#ececf4]"
     >
-      <div
-        className="mt-16 border  bg-[white] p-8 flex flex-col 
-      gap-4 shadow-lg"
-      >
-        <p className="font-bold text-center text-2xl">
-          {isLoginPage ? "Login" : "Signup"}
-        </p>
+      <div className="mt-16 flex  justify-center">
+        <img src={loginImage} className="hidden md:flex w-[25%]"></img>
 
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className=" p-2 flex flex-col gap-4"
+        <div
+          className="  bg-[white] p-10 flex flex-col 
+      gap-4 "
         >
-          <Input
-            setInput={handleChange}
-            setBlur={handleBlur}
-            type="email"
-            label="Email"
-            value={state.email}
-          ></Input>
-          {state.email?.trim() == "" && state.touched.email && (
-            <WarningHeader message="Email cannot be empty"></WarningHeader>
-          )}
-          {state.email?.trim() != "" &&
-            !state.isEmailValid &&
-            state.touched.email && (
-              <WarningHeader message="Enter a valid email"></WarningHeader>
-            )}
+          <p className="font-bold text-center text-2xl">
+            {isLoginPage ? "Login" : "Signup"}
+          </p>
 
-          <Input
-            setInput={handleChange}
-            setBlur={handleBlur}
-            type="password"
-            label="Password"
-            value={state.password}
-          ></Input>
-          {state.password?.trim() == "" && state.touched.password && (
-            <WarningHeader message="Password cannot be empty"></WarningHeader>
-          )}
-          {state.password?.trim() != "" &&
-            !state.isPasswordValid &&
-            state.touched.password && (
-              <WarningHeader message="Enter a valid password"></WarningHeader>
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className=" p-4 flex flex-col gap-4"
+          >
+            <Input
+              setInput={handleChange}
+              setBlur={handleBlur}
+              type="email"
+              label="Email"
+              value={state.email}
+            ></Input>
+            {state.email?.trim() == "" && state.touched.email && (
+              <WarningHeader message="Email cannot be empty"></WarningHeader>
             )}
+            {state.email?.trim() != "" &&
+              !state.isEmailValid &&
+              state.touched.email && (
+                <WarningHeader message="Enter a valid email"></WarningHeader>
+              )}
 
-          <div className="flex flex-col  gap-2 justify-center">
-            <button
-              className={`${
-                !state.isFormValid ? "btn-disabled" : ""
-              } text-white bg-green-500 px-2 py-1 rounded-lg font-semibold 
+            <Input
+              setInput={handleChange}
+              setBlur={handleBlur}
+              type="password"
+              label="Password"
+              value={state.password}
+            ></Input>
+            {state.password?.trim() == "" && state.touched.password && (
+              <WarningHeader message="Password cannot be empty"></WarningHeader>
+            )}
+            {state.password?.trim() != "" &&
+              !state.isPasswordValid &&
+              state.touched.password && (
+                <WarningHeader message="Enter a valid password"></WarningHeader>
+              )}
+
+            <div className="flex flex-col  gap-2 justify-center">
+              <button
+                className={`${
+                  !state.isFormValid ? "btn-disabled" : ""
+                } text-white bg-green-500 px-2 py-1 rounded-lg font-semibold 
            `}
-              onClick={() => handleSubmit()}
-            >
-              {isLoginPage ? "Login" : "Register"}
-            </button>
+                onClick={() => handleSubmit()}
+              >
+                {isLoginPage ? "Login" : "Register"}
+              </button>
 
-            <button
-              onMouseDown={(e) => e.preventDefault()}
-              onMouseUp={togglePage}
-              className="text-white bg-blue-500 px-2 py-1 rounded-lg font-semibold"
-            >
-              {isLoginPage
-                ? "Dont have an account ?"
-                : "Already have an account ?"}
-            </button>
-          </div>
-        </form>
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onMouseUp={togglePage}
+                className="text-white bg-blue-500 px-2 py-1 rounded-lg font-semibold"
+              >
+                {isLoginPage
+                  ? "Dont have an account ?"
+                  : "Already have an account ?"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

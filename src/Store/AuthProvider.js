@@ -2,9 +2,15 @@ import { createContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
 
+import { useNavigate } from "react-router-dom";
+
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
+
+  // const navigate=useNavigate();
+
+
   const [isLoggedIn, setIsLoggedIn] = useState(
     Cookies.get("loggedInUser") != undefined ? true : false
   );
@@ -20,6 +26,7 @@ export default function AuthProvider({ children }) {
     Cookies.remove("loggedInUser");
     setLoggedInUser("");
     setIsLoggedIn(false);
+    // navigate("/auth");
   }
 
   function displayToast(type, message) {

@@ -15,6 +15,8 @@ function TaskForm({ handleSubmit, setFormStatus, task, editFormStatus }) {
       <form
         onSubmit={(e) => {
           handleSubmit(e, { ...task, title, description, date });
+
+          console.log("handle submit ",handleSubmit)
           setFormStatus((prev) => !prev);
         }}
       >
